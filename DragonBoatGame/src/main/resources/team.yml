@@ -1,0 +1,22 @@
+team:
+  - name: "龙舟赛道"
+    nameColor: "&f"
+    blockWoolColor: "35:0"
+    canPvp: false
+    canInfection: false
+    victoryWeight: 0
+    teamEffect: []
+    onlyDamageTeam: []
+    maxPlayer: -1
+    deathMoney: 0
+    defaultHealth: 40
+    teamSpawnCount: 0
+    teamSpawnMessage: []
+    customSkin: ""
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 255
+      b: 255

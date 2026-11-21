@@ -1,0 +1,17 @@
+{
+   "format_version" : 1,
+   "header" : {
+      "description" : "§l§2龙舟专属材质包！",
+      "name" : "§l§6龙舟材质",
+      "uuid" : "18dd022d-1cf9-4eba-81b8-15c61a789eba",
+      "version" : [ 0, 1, 1 ]
+   },
+   "modules" : [
+      {
+         "description" : "§l§2龙舟专属材质包！",
+         "type" : "resources",
+         "uuid" : "4ab6e4b6-7110-4fca-a06f-6a6f29f2e2a2",
+         "version" : [ 0, 1, 1 ]
+      }
+   ]
+}

@@ -1,0 +1,40 @@
+package org.sobadfish.dragonboatgame.room.config;
+
+import org.sobadfish.dragonboatgame.manager.TotalManager;
+import org.sobadfish.dragonboatgame.player.PlayerInfo;
+
+/**
+ * @author Sobadfish
+ *  2023/2/6
+ */
+public class MoneyConfig {
+
+    public String moneyUnit = "$";
+
+    public double defaultValue = 1000.0;
+
+    public void add(PlayerInfo playerInfo, double value) {
+        playerInfo.money += value;
+        playerInfo.sendMessage(TotalManager.getLanguage().getLanguage("player-money-add",
+                "&e&l+ [1][2]",
+                moneyUnit, String.format("%.1f", value)));
+    }
+
+    public boolean reduce(PlayerInfo playerInfo, double value){
+        if(playerInfo.money > value) {
+            playerInfo.money -= value;
+            playerInfo.sendMessage(TotalManager.getLanguage().getLanguage("player-money-reduce",
+                    "&c&l- [1][2]",
+                    moneyUnit, String.format("%.1f", value)));
+            return true;
+        }else{
+            playerInfo.sendMessage(TotalManager.getLanguage().getLanguage("player-money-lack",
+                    "&c您的金钱不足"));
+        }
+        return false;
+    }
+
+
+}
+
+

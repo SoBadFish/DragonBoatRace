@@ -1,0 +1,21 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "dragon:missile",
+      "materials": {
+        "default": "entity_alphatest",
+        "invisible": ""
+      },
+      "textures": {
+        "default": "textures/entity/missile_texture"
+      },
+      "geometry": {
+        "default": "geometry.dragon_missile"
+      },
+      "render_controllers": [
+        "controller.render.item_default"
+      ]
+    }
+  }
+}

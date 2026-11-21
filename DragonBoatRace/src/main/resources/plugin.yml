@@ -1,0 +1,13 @@
+name: DragonBoat
+main: org.sobadfish.dragonboat.DragonBoatMainClass
+version: 1.1.0
+author: sobadfish
+load: POSTWORLD
+commands:
+  dragonboat:
+    description: 龙舟与导弹调试命令
+    usage: /dragonboat <spawn|missile|camera|rewardbox>
+    permission: dragonboat.command
+permissions:
+  dragonboat.command:
+    default: op

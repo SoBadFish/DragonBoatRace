@@ -1,0 +1,208 @@
+# 游戏地图
+world: ""
+# 游戏时长
+gameTime: 1200
+
+# 无限时间： 游戏永远不会结束（除非一个玩家没有）
+
+infinite-time: false
+# 等待大厅，玩家低于出生点x格后拉回出生点
+callbackY: 17
+# 玩家复活时间 若设置-1则玩家无法复活
+reSpawnTime: -1
+
+# 队伍之间是否PVP
+pvp: false
+
+# 是否启用内置经济系统
+money:
+  enable: false
+  default-money: 1000
+  unit: "$"
+
+# 在允许复活的时候玩家复活次数
+reSpawnCount: 0
+
+# 玩家进入游戏的游戏模式
+player-game-mode: 0
+
+# 死亡是否掉落物品
+deathDrop: true
+# 是否允许玩家旁观
+hasWatch: true
+# 等待大厅事件
+waitTime: 120
+#游戏内等待 当游戏开始后会有一段时间的等待
+gameInWait: 5
+
+# 是否进行游戏内合成
+ban-craft: false
+
+# 是否启用饥饿值掉落
+enable-food: false
+
+# 是否启用商店功能
+
+enable-shop: false
+
+# 满人时等待时长
+max-player-waitTime: 20
+
+# 房间最低玩家数量
+minPlayerSize: 2
+
+# 房间最高玩家数量
+maxPlayerSize: 8
+
+# 队伍出生点
+teamSpawn: {}
+
+# 等待大厅坐标
+waitPosition: ""
+
+# 禁止执行的指令
+ban-command: []
+
+# 玩家离开房间后执行的指令
+QuitRoom: []
+
+# 房间结束后玩家是否自动匹配下一个游戏房间
+AutomaticNextRound: true
+
+#是否允许玩家中途加入
+player-cut-in: false
+
+# 开启后会在玩家死亡的位置生成一个尸体
+# 若设置skin则模型以skin为准
+death-body:
+  enable: true
+  skin: ""
+
+# 玩家是否可以被其他玩家救起
+# 开启后复活时间将不再起作用
+player-help-respawn:
+  enable: false
+  # 多长时间没有玩家救起进入死亡状态(秒)
+  final-death-time: 60
+ # 救起时间(秒)
+  help-time: 10
+  # 救起后血量
+  respawn-health: 10
+  # 倒地血量
+  collapse-health: 10
+  # 是否允许补刀
+  can-last: true
+
+
+
+
+# 队伍/玩家取得胜利时执行的指令
+victoryCmd: []
+
+# 队伍/玩家失败时执行的指令
+defeatCmd: []
+
+# 玩家开启地图内箱子是否随机刷新物品
+
+roundChest: false
+
+# 箱子内物品出现的概率
+round: 15
+
+# TNT的伤害
+tntDamage: 8
+
+# TNT爆炸时间（秒）
+tntExplodeTime: 5
+
+# 是否允许玩家选择队伍
+player-chose-team: false
+
+# 是否允许箱子重置
+chest-can-reset: true
+
+# 箱子重置时间(秒)
+chest-reset-time: 120
+
+# 游戏结束后是否重置地图
+resetWorld: false
+
+
+# 禁止破坏的方块
+# 当禁止破坏的方块大于0时，全地图可破坏
+ban-break: []
+
+# 当可破坏的方法数大于0时，地图禁止破坏
+can-break: []
+
+# 房间内浮空字的坐标
+floatSpawnPos: []
+# 弓箭可破坏的方块
+
+# 游戏kb设置 使用独立的算法
+kb-setting:
+  enable: true
+  # 击退力道
+  force: 0.4
+  # 击退速度
+  speed: 0.5
+  # 高度
+  motionY: 0.1
+
+# 使用拓展插件列表
+enableDlc: []
+
+
+# 房间开始游戏时，给玩家发送的消息
+roomStartMessage:
+  - "&a■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
+  - "&b龙舟竞速"
+  - "&e"
+  - "&e倒计时内自动排船，起跑后冲向终点"
+  - "&e"
+  - "&a■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
+
+dragon-boat-game:
+  # 起点线端点
+  start-line:
+    from: ""
+    to: ""
+  # 终点线端点
+  finish-line:
+    from: ""
+    to: ""
+  # 第一名冲线后，剩余玩家的完赛倒计时
+  first-finish-countdown: 10
+  # 计分板最多显示多少名
+  ranking-board-size: 7
+  # 起跑时统一前推的强度
+  start-push-strength: 0.35
+  # 船经过道具实体时的判定距离
+  item-pickup-distance: 3
+  # 加速持续时长（tick）
+  boost-duration-ticks: 80
+  # 磁铁持续时长（tick）
+  magnet-duration-ticks: 80
+  # 导弹冻结时长（tick）
+  missile-stun-ticks: 60
+  # 加速附加推动强度
+  boost-strength: 0.17
+  # 磁铁拉近强度
+  magnet-strength: 0.12
+  # 导弹最大锁定距离
+  missile-range: 18
+  # 到达终点后的减速系数
+  finish-lock-speed: 0.15
+  # 船体材质
+  boat-variant: 0
+  # 赛道道具实体刷新点
+  item-spawns: []
+  # 名次奖励，支持 @p [player] [rank] [time]
+  ranking-rewards:
+    "1": []
+    "2": []
+    "3": []
+  # 未完成奖励
+  dnf-rewards: []
+
+

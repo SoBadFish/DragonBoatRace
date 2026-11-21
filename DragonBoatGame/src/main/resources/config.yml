@@ -1,0 +1,34 @@
+title: "&f[&b龙舟竞速&f]"
+
+# 是否显示伤害浮空字
+display-damage: true
+
+scoreboard-title: "&b龙舟竞速"
+
+command-player: "dbg"
+
+command-admin: "dbga"
+
+command-msg: "dbgs"
+
+# 玩家离开游戏后设置的游戏模式
+player-leave-game-mode: 2
+
+
+# 是否保存玩家背包
+save-playerInventory:  true
+
+# 递增经验
+# 每下一级的经验为 up-exp * 等级
+up-exp: 500
+
+
+game-logo: "DragonBoatGame"
+
+join-menu:
+  "Room#1":
+    buttonImg:
+      type: "path"
+      path: "textures/ui/icon_recipe_item"
+    rooms:
+      - "游戏房间"

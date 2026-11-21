@@ -1,0 +1,52 @@
+package org.sobadfish.dragonboatgame.item.button;
+
+import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.utils.TextFormat;
+import org.sobadfish.dragonboatgame.item.ICustomItem;
+import org.sobadfish.dragonboatgame.manager.TotalManager;
+import org.sobadfish.dragonboatgame.player.PlayerInfo;
+import org.sobadfish.dragonboatgame.room.GameRoom;
+
+/**
+ * 玩家离开房间的物品
+ * @author SoBadFish
+ * 2022/1/3
+ */
+public class RoomQuitItem implements ICustomItem {
+
+
+    @Override
+    public void onClick(PlayerInfo player) {
+        GameRoom room = player.getGameRoom();
+        if(room != null) {
+            if (room.quitPlayerInfo(player, true)) {
+                player.sendMessage(TotalManager.getLanguage().getLanguage("player-quit-room-success", "你成功离开房间 [1]", room.roomConfig.getName()));
+            }
+        }
+    }
+
+    @Override
+    public boolean canBeUse() {
+        return false;
+    }
+
+    @Override
+    public Item getItem() {
+        Item i = Item.get(324);
+        i.addEnchantment(Enchantment.getEnchantment(0));
+        return i;
+    }
+
+    @Override
+    public String getName() {
+        return "quitRoom";
+    }
+
+    @Override
+    public String getCustomName() {
+        return TextFormat.colorize('&',TotalManager.getLanguage().getLanguage("quit-room-button","&r&l&e点我退出游戏"));
+    }
+}
+
+

@@ -1,0 +1,15 @@
+{
+  "resource_pack_name": "DragonBoat Items",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "dragon_boost": {
+      "textures": "textures/items/dragon_boost"
+    },
+    "dragon_magnet": {
+      "textures": "textures/items/dragon_magnet"
+    },
+    "dragon_missile_item": {
+      "textures": "textures/items/dragon_missile_item"
+    }
+  }
+}

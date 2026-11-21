@@ -1,0 +1,22 @@
+{
+	"format_version": "1.10.0",
+	"minecraft:client_entity": {
+		"description": {
+			"identifier": "dragon:dragon_boat",
+			"materials": {
+				"default": "entity_alphatest",
+				"invisible": ""
+			},
+			"textures": {
+				"default": "textures/entity/dragon_boat_texture"
+
+			},
+			"geometry": {
+				"default": "geometry.dragon_boat"
+			},
+			"render_controllers": [ 
+				"controller.render.item_default"
+			]
+		}
+	}
+}
