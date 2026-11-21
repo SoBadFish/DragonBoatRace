@@ -170,6 +170,7 @@ cd ..\DragonBoatGame && mvn clean package
 ```
 
 - 环境：**JDK 17** + Maven 3.9
+- 模块说明：[DragonBoatRace/README.md](DragonBoatRace/README.md)（实体 / 道具 / 资源包）、[DragonBoatGame/README.md](DragonBoatGame/README.md)（房间框架 / 竞速 DLC / 线程模型）
 - `DragonBoatRace` 产物：`DragonBoatRace/target/DragonBoatRace_v1.1.0-SNAPSHOT.jar`
 - `DragonBoatGame` 产物：`DragonBoatGame/target/DragonBoatGame_v1.0.0.jar`
 - `DragonBoatGame/lib/` 下的 ScoreboardAPI、RsNPC、Tips 等为定制版 jar，请勿替换为仓库坐标

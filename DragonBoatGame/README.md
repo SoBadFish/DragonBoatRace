@@ -1,140 +1,84 @@
-# GameDemo
+# DragonBoatGame（小游戏框架 + 龙舟竞速）
 
-小游戏的模板框架
-修改模板来快捷的开发小游戏
+> 本模块是 [DragonBoatRace](../README.md) 仓库的一部分，负责「房间 / 队伍 / 事件 / DLC」这套小游戏框架，以及龙舟竞速规则的具体实现。
+> 安装、玩家指令、房间怎么配，看 [根目录 README](../README.md)；框架前身的原始开发文档见 [README_GameDemo.md](README_GameDemo.md)。
 
-## **开发文档**
+## 这个模块做什么
 
----
+- **房间框架**：`RoomManager` 管理房间配置与实例，`GameRoom` 负责等待 → 开始 → 结算 → 关闭的完整生命周期；
+- **竞速规则**：`DragonBoatRaceDlc` 实现起跑排位、计时、实时排名、冲线判定、统一结算、道具与重置按钮；
+- **玩家数据**：`PlayerInfo`（游戏内状态）与 `PlayerData`（跨局统计），以及进房间前的**背包持久化存档**；
+- **交互层**：`/dbg` 房间 GUI、`/dbga` 管理指令、`/dbgs` 房间喊话、计分板、箱子 / 商店面板；
+- **扩展点**：`IGameRoomDlc` 把玩法以 DLC 形式挂到房间上，内置按秒触发的定时事件（`event.yml`）。
 
-#### **房间管理**
+## 目录速查
 
-1.**简介**
+| 包 | 作用 |
+| --- | --- |
+| `manager/` | 总管理器、房间管理、线程调度、语言、菜单、数据文件读写 |
+| `manager/data/` | 玩家数据 / 排行榜 / tag / **`PlayerInventoryBackupManager`（背包存档）** |
+| `room/` | `GameRoom`、地图信息、世界还原、浮空字 |
+| `room/config/` | `room.yml` / `team.yml` / `items.yml` / `shop.yml` / `event.yml` 的映射类 |
+| `player/` | `PlayerInfo`、`PlayerData`、计分板数据、队伍信息 |
+| `race/` | **龙舟竞速**：`DragonBoatRaceDlc`、`DragonBoatRaceConfig`、房间创建监听 |
+| `dlc/` | `IGameRoomDlc` 及 `IGameEndJudge` / `IGamePlayerScoreBoard` 等接口 |
+| `item/` | 自定义按钮物品（退出房间、选队、重置龙舟…） |
+| `panel/` | 箱子 / 商店 / 房间选择等假箱子界面 |
+| `command/` | 玩家、管理、喊话三条指令 |
+| `thread/` | 后台调度的 runnable（房间帧、浮空字、匹配、排行榜） |
 
-本插件的房间管理通过 **RoomManager** 获取房间对象 (**GameRoom**) 以及房间的配置文件 (**GameRoomConfig**）来操作房间的启动。
+## 入口类
 
-2.**房间功能配置**
+| 入口 | 类 |
+| --- | --- |
+| 插件主类 | `org.sobadfish.dragonboatgame.DragonBoatGameMain` |
+| 总管理器 | `org.sobadfish.dragonboatgame.manager.TotalManager`（onEnable 时初始化所有子系统） |
+| 房间管理器 | `org.sobadfish.dragonboatgame.manager.RoomManager` |
+| 房间实例 | `org.sobadfish.dragonboatgame.room.GameRoom` |
+| 竞速核心 | `org.sobadfish.dragonboatgame.race.DragonBoatRaceDlc` |
+| 背包存档 | `org.sobadfish.dragonboatgame.manager.data.PlayerInventoryBackupManager` |
 
-房间的配置在 GameRoomConfig.java 文件设置，对应的配置文件为 **room.yml** 。本模板已预设好如下参数
+## 构建
 
+本模块通过 `pom.xml` 的 `<systemPath>` 依赖另一个模块的构建产物，**必须先构建 DragonBoatRace**：
 
-| 参数变量             | 类型                        | 介绍                                                                                                                                                                                              |
-| ---------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name                 | String                      | 游戏房间的名称 同时对应着插件文件夹中生成的文件                                                                                                                                                   |
-| worldInfo            | WorldInfoConfig             | 游戏房间的地图配置,内部封装游戏地图，等待坐标等变量<br />开发者可以根据游戏的地图需求增加其他的                                                                                                   |
-| time                 | int                         | 游戏总时长 超过这个时间游戏结束                                                                                                                                                                   |
-| waitTime             | int                         | 当玩家数量满足最低人数限制的时候，就开始读取等待时长<br />达到等待时长后，游戏进入开始状态                                                                                                        |
-| reSpawnTime          | int                         | 玩家的复活时长，如果这个时间为 0 则玩家死亡后<br />迅速回到队伍的出生点                                                                                                                           |
-| maxWaitTime          | int                         | 当房间人数到达上限后，等待时长就会相应的修改为maxWaitTime                                                                                                                                         |
-| minPlayerSize        | int                         | 游戏房间开始的最低玩家数量                                                                                                                                                                        |
-| maxPlayerSize        | int                         | 游戏房间的人数上限                                                                                                                                                                                |
-| isAutomaticNextRound | boolean                     | 当游戏结束或队伍失败后，当这个选项开启，则自动匹配其他游戏房间                                                                                                                                    |
-| teamCfg              | Map`<String,TeamConfig>`    | 存放队伍的名称与队伍的数据信息 队伍的配置信息默认为<br /> 名称,队伍颜色字符，队伍方块颜色，队伍皮革套的颜色。<br />开发者可以根据游戏的需求对这个参数进行调整<br />**对应的配置文件为** team.yml |
-| teamConfigs          | List`<TeamInfoConfig>`      | 存放队伍的配置，包含队伍的数据信息(TeamConfig),队伍的出生点<br />如果队伍中存在物品刷新点，可以在这个配置文件添加                                                                                 |
-| hasWatch             | boolean                     | 游戏房间是否允许玩家进入观战                                                                                                                                                                      |
-| callbackY            | int                         | 防止玩家在游戏的等待大厅跳下虚空 当玩家低于等待大厅的y轴<br />一定的值后将玩家传送回等待大厅的出生点                                                                                             |
-| floatTextInfoConfigs | List`<FloatTextInfoConfig>` | 浮空字的配置文件 包含名称，显示的坐标，显示的文本                                                                                                                                                 |
-| banCommand           | List`<String>`              | 在游戏内禁用的指令                                                                                                                                                                                |
-| quitCommand          | List`<String>`              | 玩家退出游戏房间执行的指令                                                                                                                                                                        |
-| victoryCommand       | List`<String>`              | 玩家在游戏中获得胜利执行的指令                                                                                                                                                                    |
-| defeatCommand        | List`<String>`              | 玩家在游戏中失败执行的指令                                                                                                                                                                        |
-| gameStartMessage     | List`<String>`              | 游戏开始时，给玩家发送的一些话                                                                                                                                                                    |
-
-如果你的游戏房间有其他的参数需求，例如空岛战争需要资源箱，就可以在地图的配置中 **WorldInfoConfig** 写入资源箱的位置并在WorldInfoConfig中的**getInstance()** 中写入读取坐标点的逻辑 WorldInfoConfig 封装了 positionToString 方法和 getPositionByString 方法，可以将坐标点转换为字符串。
-
-如果是房间内需要增加一些参数需要在 **getGameRoomConfigByFile** 中写入读取文件中配置的逻辑，加载到GameRoomConfig 中,并在**save()**中写入保存
-
-2.**游戏房间逻辑**
-
-只有房间被启动后 GameRoom才会被实例化 比如玩家加入房间，此时，GameRoomConfig 被激活，RoomManager就可以获取到相应的**GameRoom**房间对象
-
-启动后房间的初始状态为 **WAIT 大部分都是写好的逻辑 构造方法可以不需要修改**
-
-可以在房间中增加一些变量来实现游戏的功能玩法
-
-房间的主要逻辑为:
-
-#### onUpdate() 房间更新
-
-当房间被实例化后 这个方法**每秒**就会触发一次 触发类在**RoomLoadRunnable** 线程类中。
-
-##### onWait: 房间状态为等待玩家加入
-
-##### onStart: 房间状态为正在进行
-
-##### onEnd: 房间状态为结束
-
-##### onClose: 房间状态为正在进行回收关闭，短时间无法启动
-
----
-
-#### 玩家管理
-
-在游戏中的玩家使用 PlayerInfo进行控制 PlayerInfo可传入EntityHuman实体 以及Player对象
-
-**onUpdate**方法为时刻监听玩家状态的方法每秒更新一次，玩家复活，计分板在这个方法中进行实现
-
----
-
-### Tips与RsNPC变量
-**Tips:**  
-%gd-level% 玩家等级  
-%gd-exp% 玩家当前经验  
-%gd-nextExp% 玩家下一级经验  
-%gd-line% 玩家经验条  
-%gd-per% 玩家经验进度百分比  
-%gd-击杀% 玩家总击杀数  
-%gd-死亡% 玩家总死亡数  
-%gd-胜利% 玩家总胜利数  
-%gd-失败% 玩家总失败数  
-%gd-助攻% 玩家总助攻数  
-%gd-游戏次数% 玩家总游戏次数  
-  
-**RsNpc**  
-%房间名-player% 游戏房间人数  
-%模式名-player% 游戏模式人数  
-%all-player% 全部房间游戏人数  
-%房间名-maxplayer% 游戏房间最大人数  
-%房间名-status% 游戏房间状态  
-
----
-
-### 拓展插件对接
-
-在拓展插件的onEnable方法中 执行
-
-```java
-
-GameRoomDlcManager.register("拓展名称",DLC类的实体类);
+```bash
+cd ..\DragonBoatRace && mvn clean package
+cd ..\DragonBoatGame  && mvn clean package
 ```
 
-DLC实体类要实现接口，重写方法
+- 产物：`target/DragonBoatGame_v1.0.0.jar`
+- `lib/` 下的 ScoreboardAPI、RsNPC、Tips、Sakura、AutoUpData 是**定制版 jar**（`<scope>system</scope>`），不要换成仓库坐标，克隆后也别删；
+- `plugin.yml` 的版本号由 `maven-replacer-plugin` 在 `process-sources` 阶段自动改写，别手动改；
+- 项目没有单元测试，`mvn test` 无意义。
 
-```
-IGameRoomDlc
-```
-#### 重写结束条件
-如果要重写小游戏房间的结束条件 继承接口
-```
-IGameEndJudge
-//重写
-boolean judgeGameEnd(GameRoom room);
-```
-当实现的方法 返回值为true 则立即结束此游戏  
-此时就需要你在这个方法中设置好胜利的队伍与失败的队伍，总得有胜利者不是吗
-你可以调用GameRoom中的方法。
-```
-/**
-*@param teamInfo 胜利的队伍
-* @param more 是否为多队伍模式
-*/
-public void gameEnd(TeamInfo teamInfo,boolean more);
-```
-不过这个方法有局限性 你可以参考GameRoom中的demoGameEnd 来开发  
+## 运行环境
 
-#### 重写计分板
+- Java 17 + **Nukkit-MOT**（`api: 1.0.11 / 3.0.0`）
+- `softdepend`：`ScoreboardPlugin`（计分板）、`Tips`（屏幕文本）、`DragonBoat`（龙舟实体）
+- 服务端需开启 `enable-experiment-mode: true`，否则自定义实体无法生成
 
-实现接口中的方法可以重写玩家在游戏中的计分板信息
-```
-IGamePlayerScoreBoard
-```
+## 线程模型（改代码前必看）
+
+`ThreadManager` 里的 runnable（`RoomLoadRunnable`、`PluginMasterRunnable`、`TopRunnable`、`RandomJoinRunnable`）跑在**后台线程池**，而房间帧、玩家传送、实体生成、背包修改、发包都必须在主线程执行，所以这些任务统一通过 `ThreadManager.runOnMainThread(...)` 派发回主线程。
+
+历史坑：早期版本直接在后台线程里调 `room.onUpdate()`，实体坐标和主 tick 抢着改，玩家看到的高速行驶「回拉 / 一顿一顿」就是这么来的。
+
+也正因如此，**不要用 `/reload` 重载插件**（会留下悬挂的调度任务），请用 `stop` 重启。
+
+## 数据文件
+
+| 文件 | 说明 |
+| --- | --- |
+| `config.yml` | 主配置：标题、指令名、经验、加入菜单、`save-playerInventory` |
+| `rooms/<房间名>/room.yml` | 单房间配置，含 `dragon-boat-game` 竞速段 |
+| `team.yml` | 队伍、皮肤、初始装备、出生点 |
+| `items.yml` / `shop.yml` | 随机箱子物品池 / 商店菜单 |
+| `event.yml` + `roomEventList.yml` | 按秒触发的定时事件 |
+| `lang/language.ini` | 全部界面文本 |
+| `player.json` / `top.json` / `tag.json` | 玩家数据、排行榜、tag |
+| `player-inventory-backup.json` | **玩家进房间前的背包存档，勿删** |
+
+## 来源
+
+框架最初来自 [GameDemo](https://github.com/SoBadFish/GameDemo)（作者 Sobadfish），本仓库在其基础上实现了龙舟竞速玩法，并修复了线程调度与背包持久化的问题。
